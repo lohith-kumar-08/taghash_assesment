@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:5173'  // Your frontend URL
+    origin: 'http://localhost:5173'  
 }));
 
 app.post('/vote', (req, res) => {
@@ -87,6 +87,7 @@ app.get('/results', (req, res) => {
                 count: parseInt(result.count, 10),
                 voting_choice: result.voting_choice
             }));
+            
             res.send({ data: formattedResults });
         })
         .catch((error) => {

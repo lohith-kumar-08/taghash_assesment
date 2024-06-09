@@ -14,7 +14,7 @@ describe('Server Endpoints', () => {
         const res = await request(app)
             .post('/vote')
             .send({
-                name: 'Prajwal',
+                name: 'Lohith Kumar',
                 voting_choice: true,
                 casted_at: '2024-06-02'
             });

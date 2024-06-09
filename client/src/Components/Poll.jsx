@@ -20,6 +20,12 @@ const Poll = ({ open, onClose, onFormSubmit }) => {
   const [castedAt, setCastedAt] = useState("");
 
   const handleSubmit = async () => {
+    
+    if (!isNaN(name)) {
+      alert("Name should not be a number.");
+      return;
+    }
+  
     const vote = {
       name,
       voting_choice: votingChoice === "true",

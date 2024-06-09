@@ -17,6 +17,7 @@ const BarGraph = ({ dataUpdated }) => {
     try {
       const response = await fetch('http://localhost:8080/results');
       const responseData = await response.json();
+      console.log(responseData)
 
       let choice1Count = 0;
       let choice2Count = 0;
@@ -43,7 +44,7 @@ const BarGraph = ({ dataUpdated }) => {
               'rgba(255, 99, 132, 1)',
               'rgba(54, 162, 235, 1)',
             ],
-            borderWidth: 1,
+            borderWidth: 2,
           },
         ],
       });
@@ -77,13 +78,6 @@ const BarGraph = ({ dataUpdated }) => {
         }
       }
     },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        barPercentage: 0.1,
-        categoryPercentage: 0.1
-      }
-    }
   };
 
   return (

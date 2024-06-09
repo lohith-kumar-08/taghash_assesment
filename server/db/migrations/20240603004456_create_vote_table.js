@@ -1,4 +1,3 @@
-const { table } = require("../db");
 
 exports.up = function (knex) {
     return knex.schema.createTable('vote', (table) => {

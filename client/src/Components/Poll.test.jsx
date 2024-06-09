@@ -2,16 +2,15 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import Poll from './Poll';
-import { vi } from 'vitest';  // Import vitest
-
-vi.mock('axios'); // Mock axios with vitest
+import { vi } from 'vitest'; 
+vi.mock('axios'); 
 
 describe('Poll Component', () => {
   test('Submit form with valid data', async () => {
     axios.post.mockResolvedValueOnce({ data: {} });
 
-    const handleClose = vi.fn(); // Use vi.fn() instead of jest.fn()
-    const handleSubmit = vi.fn(); // Use vi.fn() instead of jest.fn()
+    const handleClose = vi.fn(); 
+    const handleSubmit = vi.fn(); 
 
     const { getByTestId, getByLabelText, getByText } = render(
       <Poll open onClose={handleClose} onFormSubmit={handleSubmit} />
