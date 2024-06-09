@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import '../App.css'; 
+import '../App.css';
 
 ChartJS.register(
   CategoryScale,
@@ -28,23 +28,19 @@ ChartJS.register(
 
 const Trend = ({ setPollStationOpen, dataUpdated }) => {
   const [votes, setVotes] = useState([]);
+  const [displayedVotes, setDisplayedVotes] = useState([]);
   const [lineData, setLineData] = useState({ labels: [], datasets: [] });
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
+  const ITEMS_PER_BATCH = 5;
 
-  const fetchData = async (pageNumber = 1) => {
+  const fetchData = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/data?page=${pageNumber}&limit=5`);
-      const newVotes = result.data.data;
+      const result = await axios.get('http://localhost:8080/data');
+      const allVotes = result.data.data;
+      setVotes(allVotes);
 
-      if (newVotes.length === 0) {
-        setHasMore(false);
-        return;
-      }
-
-      setVotes(prevVotes => [...prevVotes, ...newVotes]);
-
-      const allVotes = [...votes, ...newVotes];
+      const initialVotes = allVotes.slice(0, ITEMS_PER_BATCH);
+      setDisplayedVotes(initialVotes);
 
       const aggregatedData = allVotes.reduce((acc, vote) => {
         const date = vote.casted_at.split('T')[0];
@@ -88,13 +84,18 @@ const Trend = ({ setPollStationOpen, dataUpdated }) => {
   };
 
   useEffect(() => {
-    fetchData(1);
-  }, [dataUpdated]); 
+    fetchData();
+  }, [dataUpdated]);
 
   const fetchMoreData = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchData(nextPage);
+    const currentLength = displayedVotes.length;
+    const newLength = currentLength + ITEMS_PER_BATCH;
+    const newVotes = votes.slice(currentLength, newLength);
+    setDisplayedVotes([...displayedVotes, ...newVotes]);
+
+    if (newLength >= votes.length) {
+      setHasMore(false);
+    }
   };
 
   return (
@@ -104,7 +105,7 @@ const Trend = ({ setPollStationOpen, dataUpdated }) => {
           <h1>Voter Participation Record</h1>
         </Typography>
         <InfiniteScroll
-          dataLength={votes.length}
+          dataLength={displayedVotes.length}
           next={fetchMoreData}
           hasMore={hasMore}
           loader={<h4>Loading...</h4>}
@@ -119,7 +120,7 @@ const Trend = ({ setPollStationOpen, dataUpdated }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {votes.map((vote) => (
+              {displayedVotes.map((vote) => (
                 <TableRow key={vote.id}>
                   <TableCell>{vote.name}</TableCell>
                   <TableCell>{vote.voting_choice ? 'Yes' : 'No'}</TableCell>
@@ -136,13 +137,13 @@ const Trend = ({ setPollStationOpen, dataUpdated }) => {
         </Button>
       </div>
       <h1 data-testid="data-visualization-title">DATA VISUALIZATION</h1>
-      <Line 
-        data={lineData} 
+      <Line
+        data={lineData}
         options={{
           responsive: true,
           plugins: {
             legend: {
-              position: 'bottom',  
+              position: 'bottom',
             },
             title: {
               display: true,
@@ -178,12 +179,12 @@ const Trend = ({ setPollStationOpen, dataUpdated }) => {
               },
               ticks: {
                 beginAtZero: true,
-                stepSize: 1, 
+                stepSize: 1,
               },
             },
           },
-        }} 
-        data-testid="line-chart" 
+        }}
+        data-testid="line-chart"
       />
     </div>
   );
